@@ -19,6 +19,10 @@ export class App {
         this.renderService.setCanvasContext(this.canvasElement()!.nativeElement.getContext('2d')!);
     }
 
+    flipElbow() {
+        this.renderService.toggleElbow();
+    }
+
     public onMouseDown(e: MouseEvent) {
         this.isDragging = true;
 

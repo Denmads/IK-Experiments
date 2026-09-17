@@ -8,13 +8,15 @@ export class RendererService {
         { a: 100, theta: 0, color: '#86d493' }
     ];
 
-    private armOrigin: vec2 = vec2.fromValues(480, 275);
+    private armOrigin: vec2 = vec2.create();
     private linkOriginRadius: number = 8;
     private linkWidth: number = 10;
 
     private endEffectorPosition: vec2 = vec2.fromValues(350, 200);
     private minReach: number = this.links[0].a - this.links[1].a;
     private maxReach: number = this.links[0].a + this.links[1].a;
+
+    private isElbowLeft: boolean = true;
 
     private DEG2RAD = Math.PI / 180;
     private RAD2DEG = 180 / Math.PI;
@@ -23,15 +25,25 @@ export class RendererService {
 
     public setCanvasContext(ctx: CanvasRenderingContext2D) {
         this.ctx2d = ctx;
-        this.updateTransforms();
-        this.updateCanvas();
+        this.armOrigin = vec2.fromValues(
+            ctx.canvas.width / 2,
+            ctx.canvas.height / 2
+        );
         this.updateEndEffectorPosition(this.endEffectorPosition);
     }
 
-    public updateEndEffectorPosition(newPosition: vec2): void {
+    public toggleElbow() {
+        this.isElbowLeft = !this.isElbowLeft;
 
-        let clampedPosition = this.clampEndEffectorPosition(newPosition);
-        this.endEffectorPosition = clampedPosition;
+        this.updateEndEffectorPosition();
+    }
+
+    public updateEndEffectorPosition(newPosition: vec2 | null = null): void {
+
+        if (newPosition != null) {
+            let clampedPosition = this.clampEndEffectorPosition(newPosition);
+            this.endEffectorPosition = clampedPosition;
+        }
         
         let elbowAngle = this.calculateElbowAngle();
         let shoulderAngle = this.calculateShoulderAngle(elbowAngle);
@@ -93,7 +105,8 @@ export class RendererService {
         let cosTheta2 = (ex * ex + ey * ey - (a0 * a0) - (a1 * a1)) / (2 * a0 * a1);
         let clampedCosTheta2 = Math.min(Math.max(-1, cosTheta2), 1);
 
-        return Math.acos(clampedCosTheta2)
+        let angle = Math.acos(clampedCosTheta2)
+        return this.isElbowLeft ? angle : angle * -1;
     }
 
     private updateLinkAngle(linkIndex: number, newAngle: number): void {
@@ -125,6 +138,8 @@ export class RendererService {
         for (let i = 0; i < this.links.length; i++) {
             this.drawLink(i);
         }
+
+        this.drawTarget();
     }
 
     private drawRange() {
@@ -138,6 +153,31 @@ export class RendererService {
 
         this.ctx2d!.beginPath();
         this.ctx2d!.ellipse(this.armOrigin[0], this.armOrigin[1], this.maxReach, this.maxReach, 0, 0, 2 * Math.PI);
+        this.ctx2d!.stroke();
+    }
+
+    private drawTarget() {
+        this.ctx2d!.strokeStyle = "red";
+        this.ctx2d!.lineWidth = 2;
+        this.ctx2d!.setLineDash([])
+
+        let cTargetX = this.armOrigin[0] + this.endEffectorPosition[0];
+        let cTargetY = this.armOrigin[1] + this.endEffectorPosition[1];
+
+        let r = 10;
+
+        this.ctx2d!.beginPath();
+        this.ctx2d!.ellipse(
+            cTargetX, cTargetY,
+            r, r,
+            0, 0, 2 * Math.PI
+        );
+
+        this.ctx2d!.moveTo(cTargetX, cTargetY - r);
+        this.ctx2d!.lineTo(cTargetX, cTargetY + r);
+        this.ctx2d!.moveTo(cTargetX - r, cTargetY);
+        this.ctx2d!.lineTo(cTargetX + r, cTargetY);
+
         this.ctx2d!.stroke();
     }
 

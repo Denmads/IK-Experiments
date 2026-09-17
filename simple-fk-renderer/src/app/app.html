@@ -1,0 +1,9 @@
+<main class="container">
+    <h1>Simple Forward Kinematic Renderer</h1>
+    <canvas id="canvas" width="800" height="480" #canvas></canvas>
+    <div class="control-area">
+        <number-input inputId="angle-1" label="Alpha 1" [minValue]="-90" [maxValue]="90" [stepSize]="0.1" (onValueChange)="updateLinkAngle(0, $event - 90)"/>
+        <number-input inputId="angle-2" label="Alpha 2" [minValue]="-90" [maxValue]="90" [stepSize]="0.1" (onValueChange)="updateLinkAngle(1, $event)"/>
+        <number-input inputId="angle-3" label="Alpha 3" [minValue]="-90" [maxValue]="90" [stepSize]="0.1" (onValueChange)="updateLinkAngle(2, $event)"/>
+    </div>
+</main>

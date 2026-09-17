@@ -1,0 +1,8 @@
+h1 {
+    margin-bottom: 0.5rem;
+}
+
+#canvas {
+    border: 1px solid black;
+    background: #08133a;
+}

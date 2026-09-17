@@ -1,0 +1,15 @@
+h1 {
+    margin-bottom: 0.5rem;
+}
+
+#canvas {
+    border: 1px solid black;
+    background: #08133a;
+}
+
+.control-area {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 1rem;
+}

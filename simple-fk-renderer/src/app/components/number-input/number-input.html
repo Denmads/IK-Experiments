@@ -1,0 +1,17 @@
+<div class="input-container {{inputId()}}">
+    <label for="number-input-{{inputId()}}">{{label()}}</label>
+
+    <input 
+        id="number-input-{{inputId()}}" 
+        name="number-input"
+        type="range" 
+        [value]="defaultValue()"
+        [min]="minValue()" 
+        [max]="maxValue()" 
+        [step]="stepSize()"
+        (input)="onInputChange($event)" />
+
+    @if (showValue()) {
+        <span class="value-display">{{currentValue}}</span>
+    }
+</div>
